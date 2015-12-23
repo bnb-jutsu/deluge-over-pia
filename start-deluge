@@ -1,0 +1,32 @@
+#!/bin/bash
+
+killall deluged
+killall deluge
+
+daemon_port=$(sudo ./assign_pia_port.sh 2> /dev/null)
+echo "daemon port: $daemon_port"
+echo "daemon port: $daemon_port" > /tmp/deluge-conf
+
+listen_port=$(sudo ./assign_pia_port.sh 2> /dev/null)
+echo "listen port: $listen_port"
+echo "listen port: $listen_port" >> /tmp/deluge-conf
+
+web_ui_port=$(sudo ./assign_pia_port.sh 2> /dev/null)
+echo "web ui port: $web_ui_port"
+echo "web ui port: $web_ui_port" >> /tmp/deluge-conf
+
+tempcore=$(mktemp)
+echo "tempcore: $tempcore"
+
+tempwebui=$(mktemp)
+echo "tempwebui: $tempwebui"
+
+jq ".listen_ports=[$listen_port, $listen_port] | .daemon_port=$daemon_port"  ~/.config/deluge/core.conf > $tempcore
+jq ".port=$web_ui_port" ~/.config/deluge/web_plugin.conf > $tempwebui
+
+mv $tempcore ~/.config/deluge/core.conf
+mv $tempwebui ~/.config/deluge/web_plugin.conf
+
+echo "your config will be available here for reference /tmp/deluge-conf"
+
+deluged && deluge &
