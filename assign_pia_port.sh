@@ -1,12 +1,13 @@
 #! /bin/bash
 #
 # Enable port forwarding
+# This will open up a random port for you and return it
 #
 # Requirements:
 #   your Private Internet Access user and password as arguments
 #
 # Usage:
-#  ./port_forward.sh <user> <password>
+#  ./port_forward.sh
 
 port_forward_assignment( ) {
 	local_ip=`ifconfig tun0|grep -oE "inet *10\.[0-9]+\.[0-9]+\.[0-9]+"|tr -d "a-z :"|tee /tmp/vpn_ip`
